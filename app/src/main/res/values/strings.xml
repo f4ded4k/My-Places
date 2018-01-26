@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Save Locations</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="dialog">Locating you…</string>
+    <string name="menuEdit">Edit</string>
+    <string name="menuDelete">Delete</string>
+    <string name="deletion">Almost done…</string>
+    <string name="test">editLocationText</string>
+</resources>
