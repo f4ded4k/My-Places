@@ -54,6 +54,10 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
     LocationCallback callback;
     AlertDialog dialog;
 
+    void blahblah(String blah){
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
