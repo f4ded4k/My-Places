@@ -1,14 +1,20 @@
 package com.indrajit.savelocations;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,19 +25,22 @@ import android.widget.ListView;
 
 public class MainActivity extends SQLActivity {
 
-    ListView listView;
-    FloatingActionButton deleteButton;
-    ArrayAdapter<String> adapter;
-    ConstraintLayout mainLayout;
-    Snackbar snackbar;
-    int global_i;
-    Intent start_intent;
+    private FloatingActionButton extendButton, mapButton, deleteButton;
+    private ArrayAdapter<String> adapter;
+    private ConstraintLayout mainLayout;
+    private Snackbar snackbar;
+    private int global_i;
+    private boolean expand;
+    private CountDownTimer timer;
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_main,menu);
+
+        if (v.getId() == R.id.listView) {
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.menu_main, menu);
+        }
     }
 
     @Override
@@ -40,11 +49,19 @@ public class MainActivity extends SQLActivity {
 
         switch(item.getItemId()){
             case R.id.itemEdit:
-                openEditorDialog();
+                openEditor();
                 return true;
 
             case R.id.itemDelete:
                 deleteLocationConfirmation();
+                return true;
+
+            case R.id.itemDirection:
+                goToDirection();
+                return true;
+
+            case R.id.itemGmap:
+                goToGmap();
                 return true;
 
             default:
@@ -57,22 +74,31 @@ public class MainActivity extends SQLActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        expand=false;
+        timer = new CountDownTimer(210,210) {
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                extendButton.setClickable(true);
+            }
+        };
+
+        extendButton = findViewById(R.id.extendButton);
+        mapButton = findViewById(R.id.mapButton);
         deleteButton = findViewById(R.id.deleteButton);
-        listView = findViewById(R.id.listView);
+        ListView listView = findViewById(R.id.listView);
         registerForContextMenu(listView);
         mainLayout = findViewById(R.id.mainlayout);
         snackbar = Snackbar.make(mainLayout, "Press back again to exit.", Snackbar.LENGTH_LONG);
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, locationlist);
+        adapter.setNotifyOnChange(true);
 
         listView.setAdapter(adapter);
-
-        start_intent = getIntent();
-        String newname = start_intent.getStringExtra("newname");
-        if(newname != null && newname.length() > 0){
-            int i = start_intent.getIntExtra("i", -1);
-            updateName(newname, i);
-        }
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -93,24 +119,26 @@ public class MainActivity extends SQLActivity {
 
                 else{
 
-                    //
+                    switchActivityToMarker(i);
                 }
             }
         });
 
-        deleteButton.setAlpha((float) 0.0);
-        deleteButton.animate().alpha((float) 0.8).setDuration(1000).start();
+        extendButton.setAlpha((float) 0.0);
+        extendButton.animate().alpha((float) 1.0).setDuration(800).start();
+
+        getInternetPermission();
     }
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
 
         if(snackbar.isShown()){
-
             finish();
-        } else{
 
+        } else if(expand){
+            onClickExtend(null);
+        } else{
             snackbar.show();
         }
     }
@@ -120,6 +148,13 @@ public class MainActivity extends SQLActivity {
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void switchActivityToMarker(int i){
+
+        Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+        intent.putExtra("g_i", i);
+        startActivity(intent);
     }
 
     public void onClickDelete(View v){
@@ -133,13 +168,14 @@ public class MainActivity extends SQLActivity {
                         locationlist.clear();
                         updateEntireList();
                         adapter.notifyDataSetChanged();
+                        onClickExtend(null);
                     }
                 })
                 .setActionTextColor(Color.WHITE)
                 .show();
     }
 
-    void deleteLocationConfirmation(){
+    private void deleteLocationConfirmation(){
 
         new AlertDialog.Builder(this)
                 .setMessage("Are you sure?")
@@ -166,29 +202,112 @@ public class MainActivity extends SQLActivity {
                 .show();
     }
 
-    void openEditorDialog(){
+    private void openEditor(){
 
-        Intent intent = new Intent(getApplicationContext(), EditActivity.class);
+        Intent intent = new Intent(getApplicationContext(), EditInfoActivity.class);
         intent.putExtra("i", global_i);
-        intent.putExtra("hint", locationlist.get(global_i));
-        startActivity(intent);
+        startActivityForResult(intent, 5);
     }
 
-    void updateName(String s, int i){
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 5){
 
-        AlertDialog dialog = showLoader(MainActivity.this, R.layout.activity_delete);
-        locationlist.set(i, s);
-        Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations", null);
+            recreate();
+        }
+    }
+
+    public void onClickMap(View view) {
+
+        switchActivity();
+    }
+
+    public void onClickExtend(View view) {
+
+        if (!expand) {
+
+            extendButton.setClickable(false);
+            timer.start();
+            expand = !expand;
+            deleteButton.setAlpha((float) 0);
+            mapButton.setAlpha((float) 0);
+            mapButton.setClickable(true);
+            deleteButton.setClickable(true);
+            extendButton.animate().rotation(45).setDuration(200).start();
+            deleteButton.animate().translationYBy(-extendButton.getHeight() - 30).alpha((float) 1).setDuration(200).start();
+            mapButton.animate().translationYBy(-extendButton.getHeight() - 60 - deleteButton.getHeight()).alpha((float) 1).setDuration(200).start();
+
+        } else {
+
+            expand = !expand;
+            extendButton.setClickable(false);
+            timer.start();
+            extendButton.animate().rotation(0).setDuration(200).start();
+            deleteButton.animate().translationYBy(extendButton.getHeight() + 30).alpha((float) 0).setDuration(200).start();
+            mapButton.animate().translationYBy(extendButton.getHeight() + 60 + deleteButton.getHeight()).alpha((float) 0).setDuration(200).start();
+            mapButton.setClickable(false);
+            deleteButton.setClickable(false);
+        }
+    }
+
+    private void goToDirection() {
+
+        double lat = 0, lon = 0;
+
+        Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations",null);
         if(cursor.getCount() > 0){
 
-            cursor.moveToPosition(i - 1);
-            Object[] param = new Object[]{s, cursor.getDouble(0), cursor.getDouble(1)};
-            String sql = "UPDATE locations SET name=? WHERE lat=? AND lon=?";
-            database.execSQL(sql,param);
+            cursor.moveToPosition(global_i -1);
+            lat = cursor.getDouble(0);
+            lon = cursor.getDouble(1);
         }
         cursor.close();
-        adapter.notifyDataSetChanged();
-        dialog.dismiss();
+
+        String str = "https://www.google.com/maps/dir/?api=1&" + "&destination=" + String.valueOf(lat) + "," + String.valueOf(lon);
+
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(str));
+        startActivity(browserIntent);
+
+    }
+
+    private void goToGmap(){
+
+        double lat = 0, lon = 0;
+
+        Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations",null);
+        if(cursor.getCount() > 0){
+
+            cursor.moveToPosition(global_i -1);
+            lat = cursor.getDouble(0);
+            lon = cursor.getDouble(1);
+        }
+        cursor.close();
+
+        String str = "https://www.google.com/maps/search/?api=1" + "&query=" + String.valueOf(lat) + "," + String.valueOf(lon);
+
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(str));
+        startActivity(browserIntent);
+    }
+     private void getInternetPermission(){
+
+        if(ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 3);
+        }
+     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(requestCode == 3){
+
+            if(grantResults.length > 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED){
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 3);
+            }
+        }
     }
 }
 

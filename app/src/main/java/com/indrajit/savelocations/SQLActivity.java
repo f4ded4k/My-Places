@@ -2,44 +2,37 @@ package com.indrajit.savelocations;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
-public class SQLActivity extends AppCompatActivity {
+abstract class SQLActivity extends AppCompatActivity {
 
-    SQLiteDatabase database;
-    ArrayList<String> locationlist;
-    Geocoder geocoder;
+    protected static SQLiteDatabase database;
+    protected static ArrayList<String> locationlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        geocoder = new Geocoder(this, Locale.getDefault());
         locationlist = new ArrayList<>();
 
         database = this.openOrCreateDatabase("Database", MODE_PRIVATE, null);
 
-        database.execSQL("CREATE TABLE IF NOT EXISTS locations(lat DOUBLE, lon DOUBLE, name VARCHAR(50))");
+        database.execSQL("CREATE TABLE IF NOT EXISTS locations(lat DOUBLE, lon DOUBLE, name VARCHAR(50), fav INTEGER(1) DEFAULT 0)");
 
         updateEntireList();
     }
 
-    void resetTable(){
+    protected void resetTable(){
 
         database.execSQL("DELETE FROM locations");
     }
 
-    void updateEntireList() {
+    protected void updateEntireList() {
 
         locationlist.add("Add a new place....");
 
@@ -58,7 +51,7 @@ public class SQLActivity extends AppCompatActivity {
         cursor.close();
     }
 
-    AlertDialog showLoader(Context context,int id){
+    protected AlertDialog showLoader(Context context,int id){
 
         return new AlertDialog.Builder(context)
                 .setView(id)

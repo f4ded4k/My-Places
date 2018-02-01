@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#42a5f5</color>
-    <color name="colorPrimaryDark">#348ed7</color>
+    <color name="colorPrimary">#00acc1</color>
+    <color name="colorPrimaryDark">#0097a7</color>
     <color name="colorAccent">#00bfa5</color>
-    <color name="defaultColor">#42a5f5</color>
-    <color name="colorTertiary">#ffca28</color>
+    <color name="defaultColor">#00acc1</color>
+    <color name="colorTertiary">#ffd740</color>
+    <color name="mapCircle">#ad0089b7</color>
 </resources>

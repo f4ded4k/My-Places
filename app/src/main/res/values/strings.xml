@@ -6,4 +6,13 @@
     <string name="menuDelete">Delete</string>
     <string name="deletion">Almost done…</string>
     <string name="test">editLocationText</string>
+    <string name="almostthere">Almost there…</string>
+    <string name="go_to">Go To</string>
+    <string name="direction">Direction</string>
+    <string name="google_map">Google Maps</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="name">Name </string>
+    <string name="add_to_favourite">Add to favourite</string>
+    <string name="share">Share</string>
 </resources>

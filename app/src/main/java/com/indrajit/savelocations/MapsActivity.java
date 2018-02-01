@@ -1,8 +1,8 @@
 package com.indrajit.savelocations;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,9 +10,10 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.graphics.Color;
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -36,38 +39,41 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    LocationManager locationManager;
-    FusedLocationProviderClient client;
-    LocationRequest request;
-    LocationCallback callback;
-    AlertDialog dialog;
-
-    void blahblah(String blah){
-
-    }
+    private FusedLocationProviderClient client;
+    private LocationRequest request;
+    private LocationCallback callback;
+    private AlertDialog dialog;
+    private Intent start_intent;
+    private ProgressBar workingBar;
+    private Toast mapToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        Log.i("GEOCODER", String.valueOf(Geocoder.isPresent()));
+        workingBar = findViewById(R.id.workingBar);
+        workingBar.setAlpha((float) 0);
+
         client = LocationServices.getFusedLocationProviderClient(this);
         request = new LocationRequest();
         request.setInterval(500).setFastestInterval(500).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setNumUpdates(1);
 
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        start_intent = getIntent();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -96,13 +102,26 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
 
             if(resultCode == -1){
 
-                setCurrentLocation();
+                goToAskedLocation();
 
             } else {
 
                 //ask to continue without current location
                 createDialogBox("Would you like to continue without location?");
             }
+        }
+    }
+
+    private void goToAskedLocation(){
+
+        int i = start_intent.getIntExtra("g_i", -1);
+        if( i == -1){
+
+            setCurrentLocation();
+
+        } else{
+
+            setMarkerLocation(i);
         }
     }
 
@@ -120,7 +139,7 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
 
-                setCurrentLocation();
+                goToAskedLocation();
             }
         });
 
@@ -151,14 +170,71 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng latLng) {
 
+                showBar();
+
                 OnMapClickTask task = new OnMapClickTask();
 
-                task.execute(latLng);
+                try {
+
+                    task.execute(latLng);
+
+                } catch (Exception e) {
+
+                    Toast.makeText(MapsActivity.this, "Opps! something went wrong!", Toast.LENGTH_SHORT).show();
+                    hideBar();
+                }
             }
         });
     }
 
-    void setCurrentLocation() {
+    void setMarkerLocation(int i) {
+
+        if (Build.VERSION.SDK_INT < 23) {
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+                mMap.setMyLocationEnabled(true);
+                dialog = showLoader(this, R.layout.activity_almostthere);
+
+                Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations",null);
+                LatLng latLng = null;
+                if(cursor.getCount() > 0){
+                    cursor.moveToPosition(i - 1);
+                    latLng = new LatLng(cursor.getDouble(0),cursor.getDouble(1));
+                }
+                cursor.close();
+
+                dialog.dismiss();
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+                mMap.addCircle(new CircleOptions().center(latLng).strokeColor(Color.TRANSPARENT).fillColor(R.color.mapCircle).radius(15).visible(true));
+            }
+        } else {
+
+            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+
+                mMap.setMyLocationEnabled(true);
+                dialog = showLoader(this, R.layout.activity_almostthere);
+
+                Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations",null);
+                LatLng latLng = null;
+                if(cursor.getCount() > 0){
+                    cursor.moveToPosition(i - 1);
+                    latLng = new LatLng(cursor.getDouble(0),cursor.getDouble(1));
+                }
+                cursor.close();
+                dialog.dismiss();
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+                mMap.addCircle(new CircleOptions().center(latLng).strokeColor(Color.TRANSPARENT).fillColor(R.color.mapCircle).radius(15).visible(true));
+
+
+            } else {
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
+    }
+
+    private void setCurrentLocation() {
 
         if (Build.VERSION.SDK_INT < 23) {
 
@@ -227,11 +303,12 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    public class OnMapClickTask extends AsyncTask<LatLng, Void, LatLngInt> {
+    private class OnMapClickTask extends AsyncTask<LatLng, Void, LatLngInt> {
 
         @Override
         protected LatLngInt doInBackground(LatLng... latLngs) {
+
+            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
             String latitude = Double.toString(latLngs[0].latitude);
             String longitude = Double.toString(latLngs[0].longitude);
@@ -239,7 +316,7 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
             long similarcount = DatabaseUtils.queryNumEntries(database,"locations", "(((lat - ?) * (lat - ?)) + ((lon - ?) * (lon - ?))) < 3.00e-8",
                     new String[]{latitude,latitude,longitude,longitude});
 
-            if(similarcount == 0){
+            if(similarcount == 0 && !isCancelled()){
 
                 String address;
 
@@ -249,7 +326,7 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
 
                     address = "";
 
-                    if (addressList != null && addressList.size() > 0) {
+                    if (addressList != null && addressList.size() > 0 && !isCancelled()) {
 
                         if(addressList.get(0).getMaxAddressLineIndex() >= 0){
 
@@ -293,6 +370,7 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
 
                 } catch (Exception e){
 
+                    //e.printStackTrace();
                     return new LatLngInt(latLngs[0],1);
                 }
 
@@ -310,40 +388,35 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
             int i = latLngInt.getI();
             LatLng l = latLngInt.getL();
 
+            hideBar();
+
             if(i == 0){
 
                 mMap.addMarker(new MarkerOptions().position(l).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-                Toast.makeText(MapsActivity.this, "Added!", Toast.LENGTH_SHORT).show();
+                if(mapToast != null) {
+                    mapToast.cancel();
+                }
+                mapToast = Toast.makeText(MapsActivity.this, "Added!", Toast.LENGTH_SHORT);
+                mapToast.show();
+
             } else if(i == 1){
 
-                Toast.makeText(MapsActivity.this, "Please check your internet and try again.", Toast.LENGTH_SHORT).show();
+                if(mapToast != null) {
+                    mapToast.cancel();
+                }
+                mapToast = Toast.makeText(MapsActivity.this, "Please check your internet and try again.", Toast.LENGTH_SHORT);
+                mapToast.show();
+
             } else {
 
-                Toast.makeText(MapsActivity.this, "The location is already in the list...", Toast.LENGTH_SHORT).show();
+                if(mapToast != null) {
+                    mapToast.cancel();
+                }
+                mapToast = Toast.makeText(MapsActivity.this, "The location is already in the list...", Toast.LENGTH_SHORT);
+                mapToast.show();
+
             }
-        }
-    }
-
-    class LatLngInt{
-
-        LatLng l;
-        Integer i;
-
-        LatLngInt(LatLng l, Integer i){
-
-            this.l = l;
-            this.i = i;
-        }
-
-        Integer getI(){
-
-            return i;
-        }
-
-        LatLng getL(){
-
-            return l;
         }
     }
 
@@ -353,12 +426,12 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
         switchActivity();
     }
 
-    void switchActivity(){
+    private void switchActivity(){
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
     }
 
-    void createDialogBox(String s){
+    private void createDialogBox(String s){
 
         new AlertDialog.Builder(this)
                 .setMessage(s)
@@ -371,5 +444,15 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
                     }
                 })
                 .show();
+    }
+
+    private void showBar(){
+
+        workingBar.animate().alpha((float) 1).setDuration(500).start();
+    }
+
+    private void hideBar(){
+
+        workingBar.animate().alpha((float) 0).setDuration(500).start();
     }
 }
