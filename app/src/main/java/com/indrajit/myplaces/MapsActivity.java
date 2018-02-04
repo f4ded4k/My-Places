@@ -8,12 +8,9 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.graphics.Color;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -45,10 +42,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.List;
-import java.util.Locale;
-
-public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
+public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnClickMapTask.AsyncResponse {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient client;
@@ -171,17 +165,7 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
 
                 showBar();
 
-                OnMapClickTask task = new OnMapClickTask();
-
-                try {
-
-                    task.execute(latLng);
-
-                } catch (Exception e) {
-
-                    Toast.makeText(MapsActivity.this, "Opps! something went wrong!", Toast.LENGTH_SHORT).show();
-                    hideBar();
-                }
+                new OnClickMapTask(MapsActivity.this, 0, MapsActivity.this, latLng).execute();
             }
         });
     }
@@ -302,127 +286,48 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback {
         }
     }
 
-    private class OnMapClickTask extends AsyncTask<LatLng, Void, LatLngInt> {
+    @Override
+    public void onFinish(LatLngInt latLngInt) {
 
-        @Override
-        protected LatLngInt doInBackground(LatLng... latLngs) {
+        int i = latLngInt.getI();
+        LatLng l = latLngInt.getL();
 
-            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        if(i == 0){
 
-            String latitude = Double.toString(latLngs[0].latitude);
-            String longitude = Double.toString(latLngs[0].longitude);
+            mMap.addMarker(new MarkerOptions().position(l).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-            long similarcount = DatabaseUtils.queryNumEntries(database,"locations", "(((lat - ?) * (lat - ?)) + ((lon - ?) * (lon - ?))) < 3.00e-8",
-                    new String[]{latitude,latitude,longitude,longitude});
-
-            if(similarcount == 0 && !isCancelled()){
-
-                String address;
-
-                try {
-
-                    List<Address> addressList = geocoder.getFromLocation(latLngs[0].latitude, latLngs[0].longitude, 1);
-
-                    address = "";
-
-                    if (addressList != null && addressList.size() > 0 && !isCancelled()) {
-
-                        if(addressList.get(0).getMaxAddressLineIndex() >= 0){
-
-                            address = addressList.get(0).getAddressLine(0);
-
-                        } else {
-
-                            if (addressList.get(0).getSubThoroughfare() != null) {
-                                address += addressList.get(0).getSubThoroughfare() + " ";
-                            }
-
-                            if (addressList.get(0).getThoroughfare() != null) {
-                                address += addressList.get(0).getThoroughfare() + ", ";
-                            }
-
-                            if (addressList.get(0).getLocality() != null) {
-                                address += addressList.get(0).getLocality() + ", ";
-                            }
-
-                            if (addressList.get(0).getPostalCode() != null) {
-                                address += addressList.get(0).getPostalCode() + ", ";
-                            }
-
-                            if (addressList.get(0).getCountryCode() != null) {
-                                address += addressList.get(0).getCountryCode();
-                            }
-                        }
-
-                    } else {
-
-                        address = "Address not found";
-                    }
-
-                    String sql = "INSERT INTO locations(lat,lon,name) VALUES (?,?,?)";
-
-                    database.execSQL(sql, new Object[]{ latitude, longitude, address});
-
-                    locationlist.add(address);
-
-                    return new LatLngInt(latLngs[0],0);
-
-                } catch (Exception e){
-
-                    //e.printStackTrace();
-                    return new LatLngInt(latLngs[0],1);
-                }
-
-
-            } else{
-
-                return new LatLngInt(latLngs[0],2);
+            if(mapToast != null) {
+                mapToast.cancel();
             }
+            mapToast = Toast.makeText(MapsActivity.this, "Added!", Toast.LENGTH_SHORT);
+            mapToast.show();
+
+        } else if(i == 1){
+
+            if(mapToast != null) {
+                mapToast.cancel();
+            }
+            mapToast = Toast.makeText(MapsActivity.this, "Please check your internet and try again.", Toast.LENGTH_SHORT);
+            mapToast.show();
+
+        } else {
+
+            if(mapToast != null) {
+                mapToast.cancel();
+            }
+            mapToast = Toast.makeText(MapsActivity.this, "The location is already in the list...", Toast.LENGTH_SHORT);
+            mapToast.show();
         }
 
-        @Override
-        protected void onPostExecute(LatLngInt latLngInt) {
-            super.onPostExecute(latLngInt);
+        hideBar();
 
-            int i = latLngInt.getI();
-            LatLng l = latLngInt.getL();
-
-            hideBar();
-
-            if(i == 0){
-
-                mMap.addMarker(new MarkerOptions().position(l).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-
-                if(mapToast != null) {
-                    mapToast.cancel();
-                }
-                mapToast = Toast.makeText(MapsActivity.this, "Added!", Toast.LENGTH_SHORT);
-                mapToast.show();
-
-            } else if(i == 1){
-
-                if(mapToast != null) {
-                    mapToast.cancel();
-                }
-                mapToast = Toast.makeText(MapsActivity.this, "Please check your internet and try again.", Toast.LENGTH_SHORT);
-                mapToast.show();
-
-            } else {
-
-                if(mapToast != null) {
-                    mapToast.cancel();
-                }
-                mapToast = Toast.makeText(MapsActivity.this, "The location is already in the list...", Toast.LENGTH_SHORT);
-                mapToast.show();
-
-            }
-        }
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        //super.onBackPressed();
         switchActivity();
+        finish();
     }
 
     private void switchActivity(){

@@ -1,11 +1,10 @@
 package com.indrajit.myplaces;
 
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-class SQLDatabase {
-
-    SQLiteDatabase database;
+class SQLUtils {
 
     static SQLiteDatabase initiateDatabase(Context context){
 
