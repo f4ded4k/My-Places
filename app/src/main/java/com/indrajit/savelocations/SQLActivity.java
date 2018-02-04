@@ -20,7 +20,7 @@ abstract class SQLActivity extends AppCompatActivity {
 
         locationlist = new ArrayList<>();
 
-        database = this.openOrCreateDatabase("Database", MODE_PRIVATE, null);
+        database = openOrCreateDatabase("Database", MODE_PRIVATE, null);
 
         database.execSQL("CREATE TABLE IF NOT EXISTS locations(lat DOUBLE, lon DOUBLE, name VARCHAR(50), fav INTEGER(1) DEFAULT 0)");
 
