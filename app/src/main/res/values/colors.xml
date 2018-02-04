@@ -6,4 +6,7 @@
     <color name="defaultColor">#00acc1</color>
     <color name="colorTertiary">#ffd740</color>
     <color name="mapCircle">#ad0089b7</color>
+    <color name="greyColor">#f5f5f5</color>
+    <color name="cardBG">#7500bfa5</color>
+    <color name="greyColor1">#bdbdbd</color>
 </resources>

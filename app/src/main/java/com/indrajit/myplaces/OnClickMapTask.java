@@ -62,9 +62,10 @@ class OnClickMapTask extends AsyncTask<Void, Void, Integer>{
 
                     if(addressList.get(0).getMaxAddressLineIndex() >= 0){
 
-                        for(int i=0; i<= addressList.get(0).getMaxAddressLineIndex(); i++) {
-                            fullname.append(addressList.get(0).getAddressLine(i));
+                        for(int i=0; i<= addressList.get(0).getMaxAddressLineIndex() - 1; i++) {
+                            fullname.append(addressList.get(0).getAddressLine(i)).append(", ");
                         }
+                        fullname.append(addressList.get(0).getAddressLine(addressList.get(0).getMaxAddressLineIndex()));
 
                     }  else {
 
