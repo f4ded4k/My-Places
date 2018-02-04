@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Save Locations</string>
+    <string name="app_name">My Places</string>
     <string name="title_activity_maps">Map</string>
     <string name="dialog">Locating you…</string>
     <string name="menuEdit">Edit</string>

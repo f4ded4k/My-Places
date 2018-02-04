@@ -1,4 +1,4 @@
-package com.indrajit.savelocations;
+package com.indrajit.myplaces;
 
 import android.content.Intent;
 import android.database.Cursor;

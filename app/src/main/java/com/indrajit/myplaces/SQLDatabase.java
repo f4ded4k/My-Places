@@ -1,4 +1,4 @@
-package com.indrajit.savelocations;
+package com.indrajit.myplaces;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

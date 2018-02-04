@@ -1,4 +1,4 @@
-package com.indrajit.savelocations;
+package com.indrajit.myplaces;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.indrajit.savelocations", appContext.getPackageName());
+        assertEquals("com.indrajit.myplaces", appContext.getPackageName());
     }
 }

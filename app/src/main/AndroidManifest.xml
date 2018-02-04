@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.indrajit.savelocations">
+    package="com.indrajit.myplaces">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.indrajit.myplaces.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,14 +25,14 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name="com.indrajit.myplaces.MapsActivity"
             android:label="@string/title_activity_maps"
             android:theme="@style/AppTheme.Map" />
         <activity
-            android:name=".EditActivity"
+            android:name="com.indrajit.myplaces.EditActivity"
             android:theme="@style/AppTheme.Dialog" />
-        <activity android:name=".EditInfoActivity"
-            android:parentActivityName=".MainActivity"/>
+        <activity android:name="com.indrajit.myplaces.EditInfoActivity"
+            android:parentActivityName="com.indrajit.myplaces.MainActivity"/>
     </application>
 
 </manifest>

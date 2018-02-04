@@ -5,7 +5,7 @@
     android:id="@+id/mapslayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.indrajit.savelocations.MapsActivity">
+    tools:context="com.indrajit.myplaces.MapsActivity">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -13,7 +13,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.indrajit.savelocations.MapsActivity" />
+        tools:context="com.indrajit.myplaces.MapsActivity" />
 
     <ProgressBar
         android:id="@+id/workingBar"

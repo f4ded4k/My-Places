@@ -1,4 +1,4 @@
-package com.indrajit.savelocations;
+package com.indrajit.myplaces;
 
 import com.google.android.gms.maps.model.LatLng;
 

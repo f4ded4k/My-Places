@@ -1,4 +1,4 @@
-package com.indrajit.savelocations;
+package com.indrajit.myplaces;
 
 import android.Manifest;
 import android.app.AlertDialog;
