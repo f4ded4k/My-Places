@@ -15,6 +15,9 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +35,7 @@ public class MainActivity extends SQLActivity {
     private int global_i;
     private boolean expand;
     private CountDownTimer timer;
+    private RecyclerView recyclerView;
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -73,6 +77,16 @@ public class MainActivity extends SQLActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
+        recyclerView = findViewById(R.id.recyclerView);
+        LocationAdapter locationAdapter = new LocationAdapter(this);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setAdapter(locationAdapter);
+
+
+
 
         expand=false;
         timer = new CountDownTimer(210,210) {
