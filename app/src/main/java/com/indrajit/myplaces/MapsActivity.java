@@ -99,7 +99,6 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
 
             } else {
 
-                //ask to continue without current location
                 createDialogBox("Would you like to continue without location?");
             }
         }
@@ -166,6 +165,15 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
                 showBar();
 
                 new OnClickMapTask(MapsActivity.this, 0, MapsActivity.this, latLng).execute();
+            }
+        });
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+
+                showBar();
+                new OnClickMapTask(MapsActivity.this, 1, MapsActivity.this, latLng).execute();
             }
         });
     }
