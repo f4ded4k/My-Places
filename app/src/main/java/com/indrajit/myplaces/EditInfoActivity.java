@@ -45,7 +45,7 @@ public class EditInfoActivity extends SQLActivity {
         }
         hint = cursor.getString(2);
         latLng = new LatLng(cursor.getDouble(0), cursor.getDouble(1));
-        fav = cursor.getInt(3);
+        fav = cursor.getInt(4);
         cursor.close();
 
         editName.setHint(hint);
@@ -73,7 +73,7 @@ public class EditInfoActivity extends SQLActivity {
             fav = 0;
         }
         Object[] param = new Object[] {new_name, fav, latLng.latitude, latLng.longitude};
-        String sql = "UPDATE locations SET name = ?,fav = ? WHERE lat=? AND lon=?";
+        String sql = "UPDATE locations SET fullname = ?,fav = ? WHERE lat=? AND lon=?";
         database.execSQL(sql, param);
         locationlist.set(i, new_name);
         finish();

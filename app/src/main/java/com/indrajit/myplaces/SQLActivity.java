@@ -22,16 +22,11 @@ abstract class SQLActivity extends AppCompatActivity {
 
         database = SQLUtils.initiateDatabase(this);
 
-        //database = openOrCreateDatabase("Database", MODE_PRIVATE, null);
-
-        //database.execSQL("CREATE TABLE IF NOT EXISTS locations(lat DOUBLE, lon DOUBLE, nickname VARCHAR(20), fullname VARCHAR(50), fav INTEGER(1) DEFAULT 0, priority INTEGER(2) DEFAULT 20)");
-
         updateEntireList();
     }
 
     protected void resetTable(){
 
-        //database.execSQL("DELETE FROM locations");
         SQLUtils.resetTable(database);
     }
 
