@@ -20,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +38,7 @@ public class MainActivity extends SQLActivity {
     private boolean expand;
     private CountDownTimer timer;
     private RecyclerView recyclerView;
+    private ListView listView;
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -46,6 +48,38 @@ public class MainActivity extends SQLActivity {
             MenuInflater menuInflater = getMenuInflater();
             menuInflater.inflate(R.menu.menu_main, menu);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch(item.getItemId()){
+            case R.id.toggleView:
+                if(recyclerView.getVisibility() == View.INVISIBLE && listView.getVisibility() == View.VISIBLE){
+
+                    recyclerView.setVisibility(View.VISIBLE);
+                    listView.setVisibility(View.INVISIBLE);
+                    item.setTitle("Show as cards");
+                } else if(recyclerView.getVisibility() == View.VISIBLE && listView.getVisibility() == View.INVISIBLE){
+
+                    recyclerView.setVisibility(View.INVISIBLE);
+                    listView.setVisibility(View.VISIBLE);
+                    item.setTitle("Show as list");
+                }
+                return true;
+            case R.id.exit:
+                finish();
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     @Override
@@ -82,7 +116,12 @@ public class MainActivity extends SQLActivity {
 
 
         recyclerView = findViewById(R.id.recyclerView);
-        LocationAdapter locationAdapter = new LocationAdapter(this);
+        LocationAdapter locationAdapter = new LocationAdapter(this, new LocationAdapter.onRespondListener() {
+            @Override
+            public void _onClickAddNewPlace() {
+                switchActivity();
+            }
+        });
         //recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         //recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -107,7 +146,7 @@ public class MainActivity extends SQLActivity {
         extendButton = findViewById(R.id.extendButton);
         mapButton = findViewById(R.id.mapButton);
         deleteButton = findViewById(R.id.deleteButton);
-        ListView listView = findViewById(R.id.listView);
+        listView = findViewById(R.id.listView);
         registerForContextMenu(listView);
         mainLayout = findViewById(R.id.mainlayout);
         snackbar = Snackbar.make(mainLayout, "Press back again to exit.", Snackbar.LENGTH_LONG);

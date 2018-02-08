@@ -2,6 +2,7 @@ package com.indrajit.myplaces;
 
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +16,20 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
 
     private LayoutInflater inflater;
     private ArrayList<MyLocation> myLocations;
+    //private Context context;
+    private onRespondListener response;
 
-    LocationAdapter(Context context) {
+    interface onRespondListener {
+
+        void _onClickAddNewPlace();
+    }
+
+    LocationAdapter(Context context, onRespondListener response) {
 
         this.inflater = LayoutInflater.from(context);
         this.myLocations = RecyclerDataFetcher.populateList(context);
+        this.response = response;
+        //this.context = context;
     }
 
     @Override
@@ -71,15 +81,13 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
         }
     }
 
-    class LocationViewHolder extends GenericViewHolder{
+    private class LocationViewHolder extends GenericViewHolder{
 
-        TextView fullname,nickname;
-        Switch fav;
-        int position;
+        private TextView fullname,nickname;
+        private Switch fav;
 
         private LocationViewHolder(View itemView) {
             super(itemView);
-            this.position = position;
 
             fullname = itemView.findViewById(R.id.fullname);
             nickname = itemView.findViewById(R.id.nickname);
@@ -89,9 +97,18 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
 
     private class AddViewHolder extends GenericViewHolder{
 
+        CardView cardView;
 
         private AddViewHolder(View itemView) {
             super(itemView);
+
+            cardView = itemView.findViewById(R.id.addViewHolderCardView);
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    response._onClickAddNewPlace();
+                }
+            });
         }
     }
 }
