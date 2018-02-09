@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.animation.DynamicAnimation;
 import android.support.animation.SpringAnimation;
 import android.support.annotation.NonNull;
@@ -38,7 +37,6 @@ public class MainActivity extends SQLActivity {
     private Snackbar snackbar;
     private int global_i;
     private boolean expand;
-    private CountDownTimer timer;
     private RecyclerView recyclerView;
     private ListView listView;
     private LocationAdapter locationAdapter;
@@ -79,39 +77,6 @@ public class MainActivity extends SQLActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        super.onContextItemSelected(item);
-
-        switch(item.getItemId()){
-            case R.id.itemEdit:
-                openEditor();
-                return true;
-
-            case R.id.itemDelete:
-                deleteLocationConfirmation();
-                return true;
-
-            case R.id.itemDirection:
-                goToDirection();
-                return true;
-
-            case R.id.itemGmap:
-                goToGmap();
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -144,15 +109,16 @@ public class MainActivity extends SQLActivity {
                 switch(item.getItemId()){
                     case R.id.itemEdit:
                         openEditor();
-
+                        break;
                     case R.id.itemDelete:
-                        deleteLocationConfirmation();
-
+                        deleteLocationConfirmation(i);
+                        break;
                     case R.id.itemDirection:
-                        goToDirection();
-
+                        goToDirection(i);
+                        break;
                     case R.id.itemGmap:
-                        goToGmap();
+                        goToGmap(i);
+                        break;
                 }
             }
         }, RecyclerDataFetcher.populateList(this));
@@ -161,17 +127,6 @@ public class MainActivity extends SQLActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(locationAdapter);
         expand=false;
-        timer = new CountDownTimer(210,210) {
-            @Override
-            public void onTick(long l) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                extendButton.setClickable(true);
-            }
-        };
 
         extendButton = findViewById(R.id.extendButton);
         mapButton = findViewById(R.id.mapButton);
@@ -266,27 +221,24 @@ public class MainActivity extends SQLActivity {
                 .show();
     }
 
-    private void deleteLocationConfirmation(){
+    private void deleteLocationConfirmation(final int i){
 
         new AlertDialog.Builder(this)
                 .setMessage("Are you sure?")
                 .setNegativeButton("No", null)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(DialogInterface dialogInterface, int j) {
 
                         AlertDialog dialog = showLoader(MainActivity.this, R.layout.activity_delete);
-                        Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations",null);
-                        if(cursor.getCount() > 0){
-
-                            cursor.moveToPosition(global_i -1);
-                            Object[] params = new Object[]{ cursor.getDouble(0), cursor.getDouble(1)};
-                            locationlist.remove(global_i);
-                            String sql = "DELETE FROM locations WHERE lat=? AND lon=?";
-                            database.execSQL(sql, params);
-                        }
-                        cursor.close();
+                        Object[] params = new Object[]{ LocationAdapter.myLocations.get(i).getLat(), LocationAdapter.myLocations.get(i).getLon()};
+                        locationlist.remove(global_i);
+                        String sql = "DELETE FROM locations WHERE lat=? AND lon=?";
+                        database.execSQL(sql, params);
+                        LocationAdapter.myLocations.remove(i);
+                        locationAdapter.notifyItemRemoved(i);
                         adapter.notifyDataSetChanged();
+
                         dialog.dismiss();
                     }
                 })
@@ -314,18 +266,9 @@ public class MainActivity extends SQLActivity {
         switchActivity();
     }
 
-    private void goToDirection() {
+    private void goToDirection(int i) {
 
-        double lat = 0, lon = 0;
-
-        Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations",null);
-        if(cursor.getCount() > 0){
-
-            cursor.moveToPosition(global_i -1);
-            lat = cursor.getDouble(0);
-            lon = cursor.getDouble(1);
-        }
-        cursor.close();
+        double lat = LocationAdapter.myLocations.get(i).getLat(), lon = LocationAdapter.myLocations.get(i).getLon();
 
         String str = "https://www.google.com/maps/dir/?api=1&" + "&destination=" + String.valueOf(lat) + "," + String.valueOf(lon);
 
@@ -334,18 +277,9 @@ public class MainActivity extends SQLActivity {
 
     }
 
-    private void goToGmap(){
+    private void goToGmap(int i){
 
-        double lat = 0, lon = 0;
-
-        Cursor cursor = database.rawQuery("SELECT lat,lon FROM locations",null);
-        if(cursor.getCount() > 0){
-
-            cursor.moveToPosition(global_i -1);
-            lat = cursor.getDouble(0);
-            lon = cursor.getDouble(1);
-        }
-        cursor.close();
+        double lat = LocationAdapter.myLocations.get(i).getLat(), lon = LocationAdapter.myLocations.get(i).getLon();
 
         String str = "https://www.google.com/maps/search/?api=1" + "&query=" + String.valueOf(lat) + "," + String.valueOf(lon);
 
