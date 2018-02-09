@@ -335,12 +335,13 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
     public void onBackPressed() {
         //super.onBackPressed();
         switchActivity();
-        finish();
     }
 
     private void switchActivity(){
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        finish();
     }
 
     private void createDialogBox(String s){

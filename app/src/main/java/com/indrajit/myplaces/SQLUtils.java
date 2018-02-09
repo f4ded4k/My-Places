@@ -1,8 +1,11 @@
 package com.indrajit.myplaces;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.google.android.gms.maps.model.LatLng;
 
 class SQLUtils {
 
@@ -21,5 +24,17 @@ class SQLUtils {
     static void resetTable(SQLiteDatabase database){
 
         database.execSQL("DELETE FROM locations");
+    }
+
+    static void changeFav(SQLiteDatabase database, LatLng latLng, boolean checked) {
+
+        int fav;
+        if(checked){fav = 1;}
+        else{fav = 0;}
+
+        Object[] param = new Object[]{fav, latLng.latitude, latLng.longitude};
+        String sql = "UPDATE locations SET fav = ? WHERE lat = ? AND lon = ?";
+
+        database.execSQL(sql, param);
     }
 }

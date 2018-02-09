@@ -9,17 +9,17 @@ import java.util.ArrayList;
 
 class RecyclerDataFetcher {
 
-    static ArrayList<MyLocation> populateList(Context context){
+    static ArrayList<MyLocation> populateList(Context context) {
 
         ArrayList<MyLocation> myLocations = new ArrayList<>();
-        myLocations.add(new MyLocation("Add a place", null,0, 0, 0,0));
+        myLocations.add(new MyLocation("Add a place", null, 0, 0, 0, 0));
 
         SQLiteDatabase database = SQLUtils.initiateDatabase(context);
         Cursor cursor = database.rawQuery("SELECT * FROM locations", null);
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 
-            do{
+            do {
                 myLocations.add(new MyLocation(
                         cursor.getString(3),
                         cursor.getString(2),
@@ -28,7 +28,7 @@ class RecyclerDataFetcher {
                         cursor.getDouble(0),
                         cursor.getDouble(1)));
 
-            }while(cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
 
         cursor.close();

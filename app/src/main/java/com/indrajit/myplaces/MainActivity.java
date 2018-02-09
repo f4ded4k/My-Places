@@ -10,15 +10,15 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.animation.DynamicAnimation;
+import android.support.animation.SpringAnimation;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,6 +27,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.google.android.gms.maps.model.LatLng;
 
 public class MainActivity extends SQLActivity {
 
@@ -39,6 +41,7 @@ public class MainActivity extends SQLActivity {
     private CountDownTimer timer;
     private RecyclerView recyclerView;
     private ListView listView;
+    private LocationAdapter locationAdapter;
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -116,20 +119,47 @@ public class MainActivity extends SQLActivity {
 
 
         recyclerView = findViewById(R.id.recyclerView);
-        LocationAdapter locationAdapter = new LocationAdapter(this, new LocationAdapter.onRespondListener() {
+        locationAdapter = new LocationAdapter(this, new LocationAdapter.onRespondListener() {
             @Override
             public void _onClickAddNewPlace() {
                 switchActivity();
             }
-        });
+
+            @Override
+            public void _onClickLocation(int position) {
+
+                switchActivityToMarker(position);
+            }
+
+            @Override
+            public void _onChangeFav(LatLng latLng, boolean checked) {
+
+                SQLUtils.changeFav(database, latLng, checked);
+            }
+
+            @Override
+            public void _onClickMenuItems(MenuItem item, int i) {
+
+                global_i = i;
+                switch(item.getItemId()){
+                    case R.id.itemEdit:
+                        openEditor();
+
+                    case R.id.itemDelete:
+                        deleteLocationConfirmation();
+
+                    case R.id.itemDirection:
+                        goToDirection();
+
+                    case R.id.itemGmap:
+                        goToGmap();
+                }
+            }
+        }, RecyclerDataFetcher.populateList(this));
         //recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         //recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(locationAdapter);
-
-
-
-
         expand=false;
         timer = new CountDownTimer(210,210) {
             @Override
@@ -203,6 +233,7 @@ public class MainActivity extends SQLActivity {
 
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         finish();
     }
 
@@ -211,6 +242,7 @@ public class MainActivity extends SQLActivity {
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         intent.putExtra("g_i", i);
         startActivity(intent);
+        finish();
     }
 
     public void onClickDelete(View v){
@@ -224,7 +256,10 @@ public class MainActivity extends SQLActivity {
                         locationlist.clear();
                         updateEntireList();
                         adapter.notifyDataSetChanged();
+                        LocationAdapter.myLocations = RecyclerDataFetcher.populateList(MainActivity.this);
+                        locationAdapter.notifyDataSetChanged();
                         onClickExtend(null);
+
                     }
                 })
                 .setActionTextColor(Color.WHITE)
@@ -277,34 +312,6 @@ public class MainActivity extends SQLActivity {
     public void onClickMap(View view) {
 
         switchActivity();
-    }
-
-    public void onClickExtend(View view) {
-
-        if (!expand) {
-
-            extendButton.setClickable(false);
-            timer.start();
-            expand = !expand;
-            deleteButton.setAlpha((float) 0);
-            mapButton.setAlpha((float) 0);
-            mapButton.setClickable(true);
-            deleteButton.setClickable(true);
-            extendButton.animate().rotation(45).setDuration(200).start();
-            deleteButton.animate().translationYBy(-extendButton.getHeight() - 30).alpha((float) 1).setDuration(200).start();
-            mapButton.animate().translationYBy(-extendButton.getHeight() - 60 - deleteButton.getHeight()).alpha((float) 1).setDuration(200).start();
-
-        } else {
-
-            expand = !expand;
-            extendButton.setClickable(false);
-            timer.start();
-            extendButton.animate().rotation(0).setDuration(200).start();
-            deleteButton.animate().translationYBy(extendButton.getHeight() + 30).alpha((float) 0).setDuration(200).start();
-            mapButton.animate().translationYBy(extendButton.getHeight() + 60 + deleteButton.getHeight()).alpha((float) 0).setDuration(200).start();
-            mapButton.setClickable(false);
-            deleteButton.setClickable(false);
-        }
     }
 
     private void goToDirection() {
@@ -364,6 +371,85 @@ public class MainActivity extends SQLActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 3);
             }
         }
+    }
+
+    private void animateFAB() {
+
+        SpringAnimation rotateExtend, yDelete, yMap, aDelete, aMap;
+        rotateExtend = new SpringAnimation(extendButton, DynamicAnimation.ROTATION);
+        yDelete = new SpringAnimation(deleteButton, DynamicAnimation.TRANSLATION_Y);
+        yMap = new SpringAnimation(mapButton, DynamicAnimation.TRANSLATION_Y);
+        aDelete = new SpringAnimation(deleteButton, DynamicAnimation.ALPHA);
+        aMap = new SpringAnimation(mapButton, DynamicAnimation.ALPHA);
+        extendButton.setClickable(false);
+        deleteButton.setClickable(false);
+        mapButton.setClickable(false);
+
+        if (!expand) {
+
+            expand = !expand;
+            rotateExtend.animateToFinalPosition(45);
+            yDelete.animateToFinalPosition(-extendButton.getHeight() -30);
+            yMap.animateToFinalPosition(-60 -extendButton.getHeight() -deleteButton.getHeight());
+            aDelete.animateToFinalPosition(1);
+            aMap.animateToFinalPosition(1);
+            rotateExtend.addEndListener(new DynamicAnimation.OnAnimationEndListener() {
+                @Override
+                public void onAnimationEnd(DynamicAnimation animation, boolean canceled, float value, float velocity) {
+                    extendButton.setClickable(true);
+                    deleteButton.setClickable(true);
+                    mapButton.setClickable(true);
+                }
+            });
+
+        }else {
+
+            expand = !expand;
+            rotateExtend.animateToFinalPosition(0);
+            yDelete.animateToFinalPosition(0);
+            yMap.animateToFinalPosition(0);
+            aDelete.animateToFinalPosition(0);
+            aMap.animateToFinalPosition(0);
+            rotateExtend.addEndListener(new DynamicAnimation.OnAnimationEndListener() {
+                @Override
+                public void onAnimationEnd(DynamicAnimation animation, boolean canceled, float value, float velocity) {
+                    extendButton.setClickable(true);
+                    deleteButton.setClickable(true);
+                    mapButton.setClickable(true);
+                }
+            });
+        }
+    }
+    public void onClickExtend(View view) {
+
+        animateFAB();
+
+        /*if (!expand) {
+
+            extendButton.setClickable(false);
+            timer.start();
+            expand = !expand;
+            deleteButton.setAlpha((float) 0);
+            mapButton.setAlpha((float) 0);
+            mapButton.setClickable(true);
+            deleteButton.setClickable(true);
+            extendButton.animate().rotation(45).setDuration(200).start();
+            deleteButton.animate().translationYBy(-extendButton.getHeight() - 30).alpha((float) 1).setDuration(200).start();
+            mapButton.animate().translationYBy(-extendButton.getHeight() - 60 - deleteButton.getHeight()).alpha((float) 1).setDuration(200).start();
+
+        } else {
+
+            expand = !expand;
+            extendButton.setClickable(false);
+            timer.start();
+            extendButton.animate().rotation(0).setDuration(200).start();
+            deleteButton.animate().translationYBy(extendButton.getHeight() + 30).alpha((float) 0).setDuration(200).start();
+            mapButton.animate().translationYBy(extendButton.getHeight() + 60 + deleteButton.getHeight()).alpha((float) 0).setDuration(200).start();
+            mapButton.setClickable(false);
+            deleteButton.setClickable(false);
+
+        }
+        */
     }
 }
 

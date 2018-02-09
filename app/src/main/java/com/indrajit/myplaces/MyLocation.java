@@ -1,6 +1,7 @@
 package com.indrajit.myplaces;
 
 
+import com.google.android.gms.maps.model.LatLng;
 
 class MyLocation {
 
@@ -40,5 +41,10 @@ class MyLocation {
 
     double getLon() {
         return lon;
+    }
+
+    LatLng getLatLng(){
+
+        return new LatLng(lat, lon);
     }
 }

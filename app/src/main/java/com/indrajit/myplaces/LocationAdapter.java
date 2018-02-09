@@ -1,35 +1,48 @@
 package com.indrajit.myplaces;
 
 
+import android.animation.Animator;
 import android.content.Context;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
 class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHolder>{
 
     private LayoutInflater inflater;
-    private ArrayList<MyLocation> myLocations;
-    //private Context context;
+    static ArrayList<MyLocation> myLocations;
+    private Context context;
     private onRespondListener response;
+    private int last_position = -1;
 
     interface onRespondListener {
 
         void _onClickAddNewPlace();
+        void _onClickLocation(int position);
+        void _onChangeFav(LatLng latLng, boolean checked);
+        void _onClickMenuItems(MenuItem menuItem, int i);
     }
 
-    LocationAdapter(Context context, onRespondListener response) {
+    LocationAdapter(Context context, onRespondListener response, ArrayList<MyLocation> myLocations) {
 
         this.inflater = LayoutInflater.from(context);
-        this.myLocations = RecyclerDataFetcher.populateList(context);
+        LocationAdapter.myLocations = myLocations;
         this.response = response;
-        //this.context = context;
+        this.context = context;
     }
 
     @Override
@@ -65,7 +78,18 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
             ((LocationViewHolder) holder).fullname.setText(myLocations.get(position).getFullname());
             ((LocationViewHolder) holder).nickname.setText(myLocations.get(position).getNickname());
             ((LocationViewHolder) holder).fav.setChecked(myLocations.get(position).getFav() == 1);
+
+            startAnimation(position, ((LocationViewHolder) holder).cardView);
+        } else if(holder.getItemViewType() == 0){
+
+            startAnimation(position, ((AddViewHolder) holder).cardView);
         }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(GenericViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+        holder.clearAnimation();
     }
 
     @Override
@@ -73,11 +97,24 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
         return myLocations.size();
     }
 
-    class GenericViewHolder extends RecyclerView.ViewHolder{
+    private void startAnimation(int position, View view){
 
+        if(position > last_position){
+
+            Animation animator = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+            view.startAnimation(animator);
+            last_position = position;
+        }
+    }
+
+    class GenericViewHolder extends RecyclerView.ViewHolder{
 
         GenericViewHolder(View itemView) {
             super(itemView);
+        }
+
+        private void clearAnimation(){
+            itemView.clearAnimation();
         }
     }
 
@@ -85,13 +122,48 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
 
         private TextView fullname,nickname;
         private Switch fav;
+        private CardView cardView;
 
-        private LocationViewHolder(View itemView) {
+        private LocationViewHolder(final View itemView) {
             super(itemView);
 
+            cardView = itemView.findViewById(R.id.locationCardView);
             fullname = itemView.findViewById(R.id.fullname);
             nickname = itemView.findViewById(R.id.nickname);
             fav = itemView.findViewById(R.id.switchFav);
+
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    response._onClickLocation(getAdapterPosition());
+                }
+            });
+
+            fav.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                    response._onChangeFav(myLocations.get(getAdapterPosition()).getLatLng(), b);
+                }
+            });
+
+            cardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    PopupMenu menu = new PopupMenu(context, itemView.findViewById(R.id.greyLineView), Gravity.END);
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+
+                            response._onClickMenuItems(item, getAdapterPosition());
+                            return true;
+                        }
+                    });
+                    menu.inflate(R.menu.menu_main);
+                    menu.show();
+                    return true;
+                }
+            });
         }
     }
 
