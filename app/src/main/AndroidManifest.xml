@@ -31,8 +31,6 @@
         <activity
             android:name="com.indrajit.myplaces.EditActivity"
             android:theme="@style/AppTheme.Dialog" />
-        <activity android:name="com.indrajit.myplaces.EditInfoActivity"
-            android:parentActivityName="com.indrajit.myplaces.MainActivity"/>
     </application>
 
 </manifest>

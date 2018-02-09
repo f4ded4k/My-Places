@@ -12,41 +12,17 @@ import java.util.ArrayList;
 abstract class SQLActivity extends AppCompatActivity {
 
     protected static SQLiteDatabase database;
-    protected static ArrayList<String> locationlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        locationlist = new ArrayList<>();
-
         database = SQLUtils.initiateDatabase(this);
-
-        updateEntireList();
     }
 
     protected void resetTable(){
 
         SQLUtils.resetTable(database);
-    }
-
-    protected void updateEntireList() {
-
-        locationlist.add("Add a new place....");
-
-        Cursor cursor = database.rawQuery("SELECT fullname FROM locations", null);
-
-        if(cursor.moveToFirst()){
-
-
-            do{
-
-                locationlist.add(cursor.getString(0));
-
-            } while(cursor.moveToNext());
-        }
-
-        cursor.close();
     }
 
     protected AlertDialog showLoader(Context context,int id){
