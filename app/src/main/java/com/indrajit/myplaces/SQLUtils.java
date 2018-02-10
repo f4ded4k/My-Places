@@ -35,4 +35,10 @@ class SQLUtils {
 
         database.execSQL(sql, param);
     }
+
+    static void updateElement(SQLiteDatabase database, Object[] param){
+
+        String sql = "UPDATE locations SET fullname = ?, nickname = ?, fav = ? WHERE lat = ? AND lon = ?";
+        database.execSQL(sql, param);
+    }
 }

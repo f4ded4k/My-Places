@@ -30,7 +30,8 @@
             android:theme="@style/AppTheme.Map" />
         <activity
             android:name="com.indrajit.myplaces.EditActivity"
-            android:theme="@style/AppTheme.Dialog" />
+            android:parentActivityName=".MainActivity"
+            android:noHistory="true"/>
     </application>
 
 </manifest>

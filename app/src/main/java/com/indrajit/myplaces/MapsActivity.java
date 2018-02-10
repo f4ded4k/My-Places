@@ -13,10 +13,13 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -54,6 +57,7 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
     private Intent start_intent;
     private ProgressBar workingBar;
     private Toast mapToast;
+    private SupportMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,11 +75,10 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
 
         SupportPlaceAutocompleteFragment placeAutocompleteFragment = (SupportPlaceAutocompleteFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.place_search);
-        placeAutocompleteFragment.getView().setBackgroundColor(Color.WHITE);
 
         placeAutocompleteFragment.setOnPlaceSelectedListener(this);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -92,6 +95,13 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(l.getLatitude(), l.getLongitude()), 18));
             }
         };
+
+        findViewById(R.id.imageView).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchActivity();
+            }
+        });
     }
 
     @Override
@@ -128,6 +138,11 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        View v = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        params.setMargins(0, 0, 50, 50);
         populateMarkers();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(request);
@@ -183,6 +198,8 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
                 new OnClickMapTask(MapsActivity.this, 1, MapsActivity.this, latLng).execute();
             }
         });
+
+        //Log.i("TAB", String.valueOf(placeAutocompleteFragment.getView().getHeight()));
     }
 
     void setMarkerLocation(int i) {
@@ -195,7 +212,7 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
 
                 LatLng latLng = LocationAdapter.myLocations.get(i).getLatLng();
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
-                mMap.addCircle(new CircleOptions().center(latLng).strokeColor(Color.TRANSPARENT).fillColor(R.color.mapCircle).radius(15).visible(true));
+                //mMap.addCircle(new CircleOptions().center(latLng).strokeColor(Color.TRANSPARENT).fillColor(R.color.mapCircle).radius(15).visible(true));
             }
         } else {
 

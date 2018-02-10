@@ -21,15 +21,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
             android:gravity="fill"
             android:orientation="horizontal"
-            android:paddingBottom="10dp"
             android:weightSum="10">
 
             <TextView
                 android:id="@+id/nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="9"
                 android:maxLines="2"
                 android:minLines="1"
@@ -45,8 +46,8 @@
             <Switch
                 android:id="@+id/switchFav"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_height="match_parent"
+                android:layout_gravity="fill"
                 android:layout_weight="1"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -58,11 +59,13 @@
             <ImageView
                 android:id="@+id/more_options"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:src="@drawable/vert_more"
+                android:layout_height="wrap_content"
+                android:layout_gravity="fill"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
                 android:focusable="true"
-                android:foreground="?android:attr/selectableItemBackground"/>
+                android:paddingStart="5dp"
+                android:src="@drawable/vert_more" />
 
         </LinearLayout>
 

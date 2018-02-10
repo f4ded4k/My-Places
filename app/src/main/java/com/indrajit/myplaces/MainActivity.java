@@ -12,11 +12,13 @@ import android.support.animation.DynamicAnimation;
 import android.support.animation.SpringAnimation;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -25,7 +27,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class MainActivity extends SQLActivity {
 
     private FloatingActionButton extendButton, mapButton, deleteButton;
-    private ConstraintLayout mainLayout;
+    private RecyclerView recyclerView;
     private Snackbar snackbar;
     private boolean expand;
     private LocationAdapter locationAdapter;
@@ -35,8 +37,9 @@ public class MainActivity extends SQLActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setSupportActionBar((Toolbar) findViewById(R.id.appBar));
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         locationAdapter = new LocationAdapter(this, new LocationAdapter.onRespondListener() {
             @Override
             public void _onClickAddNewPlace() {
@@ -53,6 +56,7 @@ public class MainActivity extends SQLActivity {
             public void _onChangeFav(LatLng latLng, boolean checked) {
 
                 SQLUtils.changeFav(database, latLng, checked);
+                LocationAdapter.myLocations = RecyclerDataFetcher.populateList(MainActivity.this);
             }
 
             @Override
@@ -60,6 +64,7 @@ public class MainActivity extends SQLActivity {
 
                 switch(item.getItemId()){
                     case R.id.itemEdit:
+                        getEditor(i);
                         //reveal editor
                         break;
                     case R.id.itemDelete:
@@ -83,8 +88,7 @@ public class MainActivity extends SQLActivity {
         extendButton = findViewById(R.id.extendButton);
         mapButton = findViewById(R.id.mapButton);
         deleteButton = findViewById(R.id.deleteButton);
-        mainLayout = findViewById(R.id.mainlayout);
-        snackbar = Snackbar.make(mainLayout, "Press back again to exit.", Snackbar.LENGTH_LONG);
+        snackbar = Snackbar.make(recyclerView, "Press back again to exit.", Snackbar.LENGTH_LONG);
 
         extendButton.setAlpha((float) 0.0);
         extendButton.animate().alpha((float) 1.0).setDuration(800).start();
@@ -124,7 +128,7 @@ public class MainActivity extends SQLActivity {
 
     public void onClickDelete(View v){
 
-        Snackbar.make(mainLayout, "Are you sure? ", Snackbar.LENGTH_LONG)
+        Snackbar.make(recyclerView, "Are you sure? ", Snackbar.LENGTH_LONG)
                 .setAction("YES, remove all", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -266,6 +270,13 @@ public class MainActivity extends SQLActivity {
     public void onClickExtend(View view) {
 
         animateFAB();
+    }
+
+    private void getEditor(int i){
+
+        Intent intent = new Intent(getApplicationContext(), EditActivity.class);
+        intent.putExtra("position", i);
+        startActivity(intent);
     }
 }
 
