@@ -15,7 +15,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,9 +74,9 @@ public class MainActivity extends SQLActivity {
                 }
             }
         }, RecyclerDataFetcher.populateList(this));
-        //recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         //recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(locationAdapter);
         expand=false;
 
@@ -225,7 +225,6 @@ public class MainActivity extends SQLActivity {
         yMap = new SpringAnimation(mapButton, DynamicAnimation.TRANSLATION_Y);
         aDelete = new SpringAnimation(deleteButton, DynamicAnimation.ALPHA);
         aMap = new SpringAnimation(mapButton, DynamicAnimation.ALPHA);
-        extendButton.setClickable(false);
         deleteButton.setClickable(false);
         mapButton.setClickable(false);
 
@@ -267,33 +266,6 @@ public class MainActivity extends SQLActivity {
     public void onClickExtend(View view) {
 
         animateFAB();
-
-        /*if (!expand) {
-
-            extendButton.setClickable(false);
-            timer.start();
-            expand = !expand;
-            deleteButton.setAlpha((float) 0);
-            mapButton.setAlpha((float) 0);
-            mapButton.setClickable(true);
-            deleteButton.setClickable(true);
-            extendButton.animate().rotation(45).setDuration(200).start();
-            deleteButton.animate().translationYBy(-extendButton.getHeight() - 30).alpha((float) 1).setDuration(200).start();
-            mapButton.animate().translationYBy(-extendButton.getHeight() - 60 - deleteButton.getHeight()).alpha((float) 1).setDuration(200).start();
-
-        } else {
-
-            expand = !expand;
-            extendButton.setClickable(false);
-            timer.start();
-            extendButton.animate().rotation(0).setDuration(200).start();
-            deleteButton.animate().translationYBy(extendButton.getHeight() + 30).alpha((float) 0).setDuration(200).start();
-            mapButton.animate().translationYBy(extendButton.getHeight() + 60 + deleteButton.getHeight()).alpha((float) 0).setDuration(200).start();
-            mapButton.setClickable(false);
-            deleteButton.setClickable(false);
-
-        }
-        */
     }
 }
 

@@ -2,12 +2,9 @@ package com.indrajit.myplaces;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import java.util.ArrayList;
 
 abstract class SQLActivity extends AppCompatActivity {
 

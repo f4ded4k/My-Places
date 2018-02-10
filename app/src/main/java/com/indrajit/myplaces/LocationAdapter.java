@@ -1,7 +1,5 @@
 package com.indrajit.myplaces;
 
-
-import android.animation.Animator;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
@@ -123,6 +121,7 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
         private TextView fullname,nickname;
         private Switch fav;
         private CardView cardView;
+        private View more_menu_view;
 
         private LocationViewHolder(final View itemView) {
             super(itemView);
@@ -131,6 +130,7 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
             fullname = itemView.findViewById(R.id.fullname);
             nickname = itemView.findViewById(R.id.nickname);
             fav = itemView.findViewById(R.id.switchFav);
+            more_menu_view = itemView.findViewById(R.id.more_options);
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -147,21 +147,20 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
                 }
             });
 
-            cardView.setOnLongClickListener(new View.OnLongClickListener() {
+            more_menu_view.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View view) {
-                    PopupMenu menu = new PopupMenu(context, itemView.findViewById(R.id.greyLineView), Gravity.END);
+                public void onClick(View view) {
+
+                    PopupMenu menu = new PopupMenu(context, more_menu_view, Gravity.END);
+                    menu.inflate(R.menu.menu_main);
                     menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-
                             response._onClickMenuItems(item, getAdapterPosition());
                             return true;
                         }
                     });
-                    menu.inflate(R.menu.menu_main);
                     menu.show();
-                    return true;
                 }
             });
         }
