@@ -128,12 +128,12 @@ public class EditActivity extends SQLActivity {
 
         if(viewNickname.getText().toString().equals("")){
 
-            viewNickname.setText(viewNickname.getHint());
+            viewNickname.setText(layoutNickname.getHint());
         }
 
         if(viewFullname.getText().toString().equals("")){
 
-            viewFullname.setText(viewFullname.getHint());
+            viewFullname.setText(layoutFullname.getHint());
         }
 
         if(viewNickname.getText().toString().length() <= 3 || viewFullname.getText().toString().length() <= 8){

@@ -28,7 +28,8 @@
             android:name="com.indrajit.myplaces.MapsActivity"
             android:label="@string/title_activity_maps"
             android:theme="@style/AppTheme.Map"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity"
+            android:noHistory="true"/>
         <activity
             android:name="com.indrajit.myplaces.EditActivity"
             android:parentActivityName=".MainActivity"

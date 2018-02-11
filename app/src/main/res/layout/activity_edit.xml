@@ -13,6 +13,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
+            android:background="@drawable/recyclerview_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="top"
@@ -268,12 +269,14 @@
             app:toolbarId="@id/appBarEdit">
 
             <ImageView
-                android:contentDescription="@string/appbar_img"
+                android:id="@+id/editNavImage"
+                android:transitionName="img_trans"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/appbar_img"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
-                app:srcCompat="@drawable/nav_icon" />
+                app:srcCompat="@drawable/navbar_background" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/appBarEdit"

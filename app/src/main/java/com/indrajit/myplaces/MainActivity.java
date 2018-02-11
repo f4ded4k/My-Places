@@ -280,7 +280,8 @@ public class MainActivity extends SQLActivity {
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
                 Pair.create(view.findViewById(R.id.fullname), "fullname_trans"),
                 Pair.create(view.findViewById(R.id.nickname), "nickname_trans"),
-                Pair.create(view.findViewById(R.id.switchFav), "fav_trans"));
+                Pair.create(view.findViewById(R.id.switchFav), "fav_trans"),
+                Pair.create(view, "img_trans"));
         intent.putExtra("position", i);
         startActivity(intent, options.toBundle());
     }

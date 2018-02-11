@@ -343,7 +343,8 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
 
     private void switchActivity() {
 
-        navigateUpTo(getParentActivityIntent());
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
