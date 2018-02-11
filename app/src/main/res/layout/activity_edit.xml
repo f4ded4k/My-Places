@@ -20,6 +20,7 @@
             android:orientation="vertical">
 
             <android.support.v7.widget.CardView
+                android:id="@+id/latlngCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -32,38 +33,39 @@
                     android:layout_height="match_parent">
 
                     <TextView
+                        android:textColor="@color/cardview_dark_background"
                         android:id="@+id/textView42"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
+                        android:labelFor="@+id/editTextLatLng"
                         android:text="@string/latitude_longitude"
                         android:textSize="20sp"
                         android:transitionName="transition_1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:labelFor="@+id/editTextLatLng"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <EditText
                         android:id="@+id/editTextLatLng"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
                         android:ems="10"
                         android:enabled="false"
                         android:inputType="none"
                         android:maxLines="1"
+                        android:textColor="@color/cardview_dark_background"
                         android:textStyle="italic"
+                        android:transitionName="latlng_trans"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView42"
-                        android:transitionName="latlng_trans" />
+                        app:layout_constraintTop_toBottomOf="@+id/textView42" />
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:id="@+id/favCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -84,6 +86,7 @@
                         android:layout_marginStart="8dp"
                         android:text="@string/favorite"
                         android:textSize="20sp"
+                        android:textColor="@color/cardview_dark_background"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -94,15 +97,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
+                        android:transitionName="fav_trans"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:transitionName="fav_trans"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </android.support.constraint.ConstraintLayout>
 
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:id="@+id/nicknameCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -124,7 +128,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:textColor="@color/cardview_dark_background"/>
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/layoutNickname"
@@ -140,12 +145,11 @@
                             android:id="@+id/editTextNickname"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
                             android:ellipsize="end"
                             android:ems="10"
-                            android:inputType="text|textPostalAddress"
+                            android:inputType="textCapWords|textPostalAddress"
                             android:maxLines="1"
+                            android:textColor="@color/cardview_dark_background"
                             android:textStyle="italic"
                             android:transitionName="nickname_trans" />
 
@@ -168,6 +172,7 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:id="@+id/fullnameCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -187,6 +192,7 @@
                         android:layout_marginStart="8dp"
                         android:text="@string/fullname"
                         android:textSize="20sp"
+                        android:textColor="@color/cardview_dark_background"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -206,12 +212,11 @@
                             android:id="@+id/editTextFullname"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
                             android:ellipsize="end"
                             android:ems="10"
-                            android:inputType="text|textPostalAddress"
+                            android:inputType="textCapWords|textPostalAddress"
                             android:maxLines="1"
+                            android:textColor="@color/cardview_dark_background"
                             android:textStyle="italic"
                             android:transitionName="fullname_trans" />
 
@@ -239,15 +244,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="15dp"
+                android:paddingBottom="20dp">
 
                 <ImageView
-                    android:contentDescription="@string/static_map"
                     android:id="@+id/staticMapImageView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scaleType="centerCrop"
-                    android:fadingEdgeLength="5dp"/>
+                    android:contentDescription="@string/static_map"
+                    android:scaleType="centerCrop" />
 
             </android.support.v7.widget.CardView>
         </LinearLayout>
@@ -265,7 +270,7 @@
             android:layout_height="match_parent"
             app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:layout_scrollInterpolator="@android:anim/accelerate_decelerate_interpolator"
+            app:layout_scrollInterpolator="@android:anim/linear_interpolator"
             app:toolbarId="@id/appBarEdit">
 
             <ImageView

@@ -55,16 +55,19 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
-                android:contentDescription="@string/more_menu"
                 android:id="@+id/more_options"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="fill"
+                android:layout_gravity="center_vertical"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
+                android:contentDescription="@string/more_menu"
                 android:focusable="true"
-                android:paddingStart="5dp"
+                android:paddingBottom="5dp"
                 android:paddingEnd="5dp"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:scaleType="centerCrop"
                 android:src="@drawable/vert_more" />
 
         </LinearLayout>

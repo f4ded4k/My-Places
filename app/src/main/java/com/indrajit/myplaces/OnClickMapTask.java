@@ -118,6 +118,11 @@ class OnClickMapTask extends AsyncTask<Void, Void, Integer>{
                     nickname = "My lovely place";
                 }
 
+                if(nickname.endsWith(", ")){
+
+                    nickname = nickname.substring(0, nickname.length() - 1);
+                }
+
                 Object[] params = new Object[]{latitude, longitude, nickname, fullname.toString(), fav};
                 String sql = "INSERT INTO locations (lat,lon,nickname,fullname,fav) VALUES (?,?,?,?,?)";
                 Log.i("SQL", Arrays.toString(params));

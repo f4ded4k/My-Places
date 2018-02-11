@@ -16,7 +16,7 @@ class SQLUtils {
 
     static private void initiateTable(SQLiteDatabase database){
 
-        database.execSQL("CREATE TABLE IF NOT EXISTS locations(lat DOUBLE, lon DOUBLE, nickname VARCHAR(20), fullname VARCHAR(50), fav INTEGER(1) DEFAULT 0, priority INTEGER(2) DEFAULT 20)");
+        database.execSQL("CREATE TABLE IF NOT EXISTS locations(lat DOUBLE, lon DOUBLE, nickname VARCHAR, fullname VARCHAR, fav INTEGER(1) DEFAULT 0, priority INTEGER(2) DEFAULT 20)");
     }
 
     static void resetTable(SQLiteDatabase database){

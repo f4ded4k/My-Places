@@ -15,7 +15,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -135,11 +138,28 @@ public class MapsActivity extends SQLActivity implements OnMapReadyCallback, OnC
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        View v = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 92, getResources().getDisplayMetrics());
+        View v = mapFragment.getView().findViewWithTag("GoogleMapMyLocationButton");
+        View compass_v = ((ViewGroup) v.getParent()).getChildAt(4);
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
-        params.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        params.setMargins(0, 0, 50, 50);
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        params.setMargins(
+                0,
+                (int) (92 * ((float)getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT)),
+                (int) (13 * ((float)getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT)),
+                0
+        );
+
+        RelativeLayout.LayoutParams compass_params = (RelativeLayout.LayoutParams) compass_v.getLayoutParams();
+        compass_params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+        compass_params.setMargins(
+                (int) (13 * ((float)getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT)),
+                (int) (92 * ((float)getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT)),
+                0,
+                0
+        );
+
+
         populateMarkers();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(request);

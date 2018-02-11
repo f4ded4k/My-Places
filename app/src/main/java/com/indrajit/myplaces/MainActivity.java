@@ -1,6 +1,9 @@
 package com.indrajit.myplaces;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,19 +11,29 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.animation.DynamicAnimation;
 import android.support.animation.SpringAnimation;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -32,6 +45,7 @@ public class MainActivity extends SQLActivity {
     private boolean expand;
     private LocationAdapter locationAdapter;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -77,6 +91,9 @@ public class MainActivity extends SQLActivity {
                     case R.id.itemGmap:
                         goToGmap(i);
                         break;
+                    case R.id.itemShare:
+                        startShareIntent(i);
+                        break;
                 }
             }
         }, RecyclerDataFetcher.populateList(this));
@@ -84,15 +101,38 @@ public class MainActivity extends SQLActivity {
         //recyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         //recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(locationAdapter);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if(!recyclerView.canScrollVertically(1) && recyclerView.computeVerticalScrollOffset() != 0){
+
+                    if(deleteButton.getVisibility() == View.VISIBLE) {
+
+                        deleteButton.setVisibility(View.INVISIBLE);
+                        mapButton.setVisibility(View.INVISIBLE);
+                        extendButton.animate().scaleX(0).scaleY(0).setDuration(300).setInterpolator(new AccelerateInterpolator()).start();
+                    }
+                } else {
+
+                    if (deleteButton.getVisibility() == View.INVISIBLE) {
+
+                        mapButton.setVisibility(View.VISIBLE);
+                        extendButton.setVisibility(View.VISIBLE);
+                        deleteButton.setVisibility(View.VISIBLE);
+                        extendButton.animate().scaleX(1).scaleY(1).setDuration(300).setInterpolator(new AccelerateInterpolator()).start();
+                    }
+                }
+            }
+        });
         expand=false;
 
         extendButton = findViewById(R.id.extendButton);
         mapButton = findViewById(R.id.mapButton);
         deleteButton = findViewById(R.id.deleteButton);
         snackbar = Snackbar.make(recyclerView, "Press back again to exit.", Snackbar.LENGTH_LONG);
-
-        extendButton.setAlpha((float) 0.0);
-        extendButton.animate().alpha((float) 1.0).setDuration(800).start();
 
         getInternetPermission();
     }
@@ -276,14 +316,22 @@ public class MainActivity extends SQLActivity {
     private void getEditor(int i, View view){
 
         Intent intent = new Intent(getApplicationContext(), EditActivity.class);
-
-        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
-                Pair.create(view.findViewById(R.id.fullname), "fullname_trans"),
-                Pair.create(view.findViewById(R.id.nickname), "nickname_trans"),
-                Pair.create(view.findViewById(R.id.switchFav), "fav_trans"),
-                Pair.create(view, "img_trans"));
         intent.putExtra("position", i);
-        startActivity(intent, options.toBundle());
+        startActivity(intent);
+    }
+
+    private void startShareIntent(int i){
+
+        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        String uri = "http://maps.google.com/maps?saddr=" +
+                String.valueOf(LocationAdapter.myLocations.get(i).getLat()) +
+                "," +
+                String.valueOf(LocationAdapter.myLocations.get(i).getLon());
+        String shareSub = LocationAdapter.myLocations.get(i).getFullname();
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, shareSub);
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareSub + "\n" + uri);
+        startActivity(Intent.createChooser(sharingIntent, "Share location using..."));
     }
 }
 

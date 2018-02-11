@@ -27,7 +27,7 @@ public class EditActivity extends SQLActivity {
     private MyLocation location;
     private ImageView titleView;
     private TextInputLayout layoutNickname, layoutFullname;
-    private CardView mapCardView;
+    private View mapCardView, nickCard, fullCard, latlngCard, favCard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +43,12 @@ public class EditActivity extends SQLActivity {
         viewLatlng = findViewById(R.id.editTextLatLng);
         favSwitch = findViewById(R.id.switchFav);
         titleView = findViewById(R.id.staticMapImageView);
-        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsingLayoutEdit);
         layoutNickname = findViewById(R.id.layoutNickname);
         layoutFullname = findViewById(R.id.layoutFullname);
-
-
-        collapsingToolbarLayout.setExpandedTitleColor(Color.TRANSPARENT);
+        favCard = findViewById(R.id.favCard);
+        latlngCard = findViewById(R.id.latlngCard);
+        fullCard = findViewById(R.id.fullnameCard);
+        nickCard = findViewById(R.id.nicknameCard);
 
         Intent start_intent = getIntent();
         position = start_intent.getIntExtra("position", -1);
@@ -58,11 +58,11 @@ public class EditActivity extends SQLActivity {
             location = LocationAdapter.myLocations.get(position);
             bindViews();
 
-            URL url;
-
             try {
 
-                url = new URL("http://maps.googleapis.com/maps/api/staticmap?zoom=19&size=640x500&maptype=roadmap&scale=2&markers="
+                URL url;
+
+                url = new URL("http://maps.googleapis.com/maps/api/staticmap?zoom=19&size=600x350&maptype=roadmap&scale=2&markers="
                         + Double.toString(location.getLat())
                         + ","
                         + Double.toString(location.getLon())
@@ -75,7 +75,7 @@ public class EditActivity extends SQLActivity {
                         if(bitmap != null){
 
                             titleView.setImageBitmap(bitmap);
-                            Animation animator = AnimationUtils.loadAnimation(EditActivity.this, android.R.anim.fade_in);
+                            Animation animator = AnimationUtils.loadAnimation(EditActivity.this, android.R.anim.slide_in_left);
                             mapCardView.startAnimation(animator);
 
 
@@ -93,8 +93,6 @@ public class EditActivity extends SQLActivity {
                 Toast.makeText(this, "Opps! That's a bug...", Toast.LENGTH_SHORT).show();
             }
         }
-
-
     }
 
     private void bindViews(){
@@ -104,6 +102,11 @@ public class EditActivity extends SQLActivity {
         favSwitch.setChecked(location.getFav() == 1);
         layoutNickname.setHint(location.getNickname());
         layoutFullname.setHint(location.getFullname());
+        Animation animation = AnimationUtils.loadAnimation(this, android.R.anim.slide_in_left);
+        nickCard.startAnimation(animation);
+        fullCard.startAnimation(animation);
+        favCard.startAnimation(animation);
+        latlngCard.startAnimation(animation);
     }
 
     public void onClickMap(View v){
