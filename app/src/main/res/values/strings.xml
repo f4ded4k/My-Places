@@ -21,4 +21,11 @@
     <string name="fullname">Fullname :</string>
     <string name="favorite">Favorite :</string>
     <string name="todo">TODO</string>
+    <string name="static_map">static map</string>
+    <string name="appbar_img">appbar image</string>
+    <string name="nickname_1">Nickname</string>
+    <string name="more_menu">more menu</string>
+    <string name="fullname_1">Fullname</string>
+    <string name="add_a_place_icon">add a place icon</string>
+    <string name="add_a_new_place_text">Add a new place</string>
 </resources>

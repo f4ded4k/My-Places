@@ -27,8 +27,6 @@ class StaticImageDownloadTask extends android.os.AsyncTask<Void,Void,Bitmap>{
         try {
 
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setDoInput(true);
-            urlConnection.connect();
             InputStream inputStream = urlConnection.getInputStream();
 
             return BitmapFactory.decodeStream(inputStream);

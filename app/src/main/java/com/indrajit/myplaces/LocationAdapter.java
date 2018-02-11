@@ -32,7 +32,7 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
         void _onClickAddNewPlace();
         void _onClickLocation(int position);
         void _onChangeFav(LatLng latLng, boolean checked);
-        void _onClickMenuItems(MenuItem menuItem, int i);
+        void _onClickMenuItems(MenuItem menuItem, int i, View view);
     }
 
     LocationAdapter(Context context, onRespondListener response, ArrayList<MyLocation> myLocations) {
@@ -156,7 +156,7 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
                     menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            response._onClickMenuItems(item, getAdapterPosition());
+                            response._onClickMenuItems(item, getAdapterPosition(), itemView);
                             return true;
                         }
                     });

@@ -1,6 +1,7 @@
 package com.indrajit.myplaces;
 
 import android.Manifest;
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,14 +12,13 @@ import android.os.Bundle;
 import android.support.animation.DynamicAnimation;
 import android.support.animation.SpringAnimation;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -34,6 +34,7 @@ public class MainActivity extends SQLActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -60,11 +61,11 @@ public class MainActivity extends SQLActivity {
             }
 
             @Override
-            public void _onClickMenuItems(MenuItem item, int i) {
+            public void _onClickMenuItems(MenuItem item, int i, View view) {
 
                 switch(item.getItemId()){
                     case R.id.itemEdit:
-                        getEditor(i);
+                        getEditor(i, view);
                         //reveal editor
                         break;
                     case R.id.itemDelete:
@@ -272,11 +273,16 @@ public class MainActivity extends SQLActivity {
         animateFAB();
     }
 
-    private void getEditor(int i){
+    private void getEditor(int i, View view){
 
         Intent intent = new Intent(getApplicationContext(), EditActivity.class);
+
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
+                Pair.create(view.findViewById(R.id.fullname), "fullname_trans"),
+                Pair.create(view.findViewById(R.id.nickname), "nickname_trans"),
+                Pair.create(view.findViewById(R.id.switchFav), "fav_trans"));
         intent.putExtra("position", i);
-        startActivity(intent);
+        startActivity(intent, options.toBundle());
     }
 }
 

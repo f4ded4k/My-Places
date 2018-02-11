@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -38,10 +37,12 @@
                         android:layout_marginStart="8dp"
                         android:text="@string/latitude_longitude"
                         android:textSize="20sp"
+                        android:transitionName="transition_1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:labelFor="@+id/editTextLatLng"/>
 
                     <EditText
                         android:id="@+id/editTextLatLng"
@@ -53,11 +54,11 @@
                         android:enabled="false"
                         android:inputType="none"
                         android:maxLines="1"
-                        android:textColor="@color/cardview_dark_background"
                         android:textStyle="italic"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView42" />
+                        app:layout_constraintTop_toBottomOf="@+id/textView42"
+                        android:transitionName="latlng_trans" />
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
 
@@ -93,7 +94,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="4dp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:transitionName="fav_trans"/>
 
                 </android.support.constraint.ConstraintLayout>
 
@@ -123,19 +125,30 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <EditText
-                        android:id="@+id/editTextNickname"
-                        android:layout_width="0dp"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/layoutNickname"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:ems="10"
-                        android:inputType="text|textPostalAddress"
-                        android:maxLines="1"
-                        android:textStyle="italic"
+                        android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                        app:layout_constraintTop_toBottomOf="@+id/imageView3">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/editTextNickname"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:ellipsize="end"
+                            android:ems="10"
+                            android:inputType="text|textPostalAddress"
+                            android:maxLines="1"
+                            android:textStyle="italic"
+                            android:transitionName="nickname_trans" />
+
+                    </android.support.design.widget.TextInputLayout>
 
                     <ImageView
                         android:id="@+id/imageView3"
@@ -165,6 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+
                     <TextView
                         android:id="@+id/textView41"
                         android:layout_width="wrap_content"
@@ -177,19 +191,30 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <EditText
-                        android:id="@+id/editTextFullname"
-                        android:layout_width="0dp"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/layoutFullname"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:ems="10"
-                        android:inputType="text|textPostalAddress"
-                        android:maxLines="1"
-                        android:textStyle="italic"
+                        android:orientation="horizontal"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView41" />
+                        app:layout_constraintTop_toBottomOf="@+id/imageView4">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/editTextFullname"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:ellipsize="end"
+                            android:ems="10"
+                            android:inputType="text|textPostalAddress"
+                            android:maxLines="1"
+                            android:textStyle="italic"
+                            android:transitionName="fullname_trans" />
+
+                    </android.support.design.widget.TextInputLayout>
 
                     <ImageView
                         android:id="@+id/imageView4"
@@ -206,6 +231,24 @@
                         app:srcCompat="@drawable/reset_icon" />
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/staticMapView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp">
+
+                <ImageView
+                    android:contentDescription="@string/static_map"
+                    android:id="@+id/staticMapImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scaleType="centerCrop"
+                    android:fadingEdgeLength="5dp"/>
+
+            </android.support.v7.widget.CardView>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
@@ -221,9 +264,11 @@
             android:layout_height="match_parent"
             app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:layout_scrollInterpolator="@android:anim/accelerate_decelerate_interpolator">
+            app:layout_scrollInterpolator="@android:anim/accelerate_decelerate_interpolator"
+            app:toolbarId="@id/appBarEdit">
 
             <ImageView
+                android:contentDescription="@string/appbar_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
@@ -285,8 +330,8 @@
         android:onClick="onClickSaveEdit"
         android:scaleType="center"
         app:fabSize="normal"
-        app:layout_anchor="@id/scrollView"
-        app:layout_anchorGravity="bottom|right|end"
+        app:layout_anchor="@id/floatingActionButton3"
+        app:layout_anchorGravity="center_vertical|end"
         app:rippleColor="@android:color/holo_green_light"
         app:srcCompat="@drawable/check_icon" />
 
