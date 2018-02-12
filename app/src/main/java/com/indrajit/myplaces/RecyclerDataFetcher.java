@@ -4,7 +4,6 @@ package com.indrajit.myplaces;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import java.util.ArrayList;
 
 class RecyclerDataFetcher {

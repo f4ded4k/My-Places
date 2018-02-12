@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -77,10 +78,10 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
             ((LocationViewHolder) holder).nickname.setText(myLocations.get(position).getNickname());
             ((LocationViewHolder) holder).fav.setChecked(myLocations.get(position).getFav() == 1);
 
-            startAnimation(position, ((LocationViewHolder) holder).cardView);
+            startAnimation(position, ((LocationViewHolder) holder).itemView);
         } else if(holder.getItemViewType() == 0){
 
-            startAnimation(position, ((AddViewHolder) holder).cardView);
+            startAnimation(position, ((AddViewHolder) holder).itemView);
         }
     }
 
@@ -109,6 +110,8 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
 
         GenericViewHolder(View itemView) {
             super(itemView);
+
+            itemView.setHapticFeedbackEnabled(true);
         }
 
         private void clearAnimation(){
@@ -116,23 +119,23 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
         }
     }
 
-    private class LocationViewHolder extends GenericViewHolder{
+    class LocationViewHolder extends GenericViewHolder{
 
         private TextView fullname,nickname;
         private Switch fav;
-        private CardView cardView;
         private View more_menu_view;
+        View foreground;
 
         private LocationViewHolder(final View itemView) {
             super(itemView);
 
-            cardView = itemView.findViewById(R.id.locationCardView);
             fullname = itemView.findViewById(R.id.fullname);
             nickname = itemView.findViewById(R.id.nickname);
             fav = itemView.findViewById(R.id.switchFav);
             more_menu_view = itemView.findViewById(R.id.more_options);
+            foreground = itemView.findViewById(R.id.locationCardView);
 
-            cardView.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     response._onClickLocation(getAdapterPosition());
@@ -151,30 +154,41 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
                 @Override
                 public void onClick(View view) {
 
-                    PopupMenu menu = new PopupMenu(context, more_menu_view, Gravity.END);
-                    menu.inflate(R.menu.menu_main);
-                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            response._onClickMenuItems(item, getAdapterPosition(), itemView);
-                            return true;
-                        }
-                    });
-                    menu.show();
+                    showMore(getAdapterPosition(), itemView, more_menu_view);
+                }
+            });
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+
+                    showMore(getAdapterPosition(), itemView, more_menu_view);
+                    return true;
                 }
             });
         }
     }
 
-    private class AddViewHolder extends GenericViewHolder{
+    private void showMore(final int adapterposition, final View itemView,View anchorView) {
 
-        CardView cardView;
+        PopupMenu menu = new PopupMenu(context, anchorView, Gravity.END);
+        menu.inflate(R.menu.menu_main);
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                response._onClickMenuItems(item, adapterposition, itemView);
+                return true;
+            }
+        });
+        menu.show();
+    }
+
+    private class AddViewHolder extends GenericViewHolder{
 
         private AddViewHolder(View itemView) {
             super(itemView);
 
-            cardView = itemView.findViewById(R.id.addViewHolderCardView);
-            cardView.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     response._onClickAddNewPlace();

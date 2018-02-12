@@ -18,6 +18,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import java.net.URL;
+import java.util.Collections;
 
 public class EditActivity extends SQLActivity {
 

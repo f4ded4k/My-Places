@@ -7,15 +7,15 @@
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/greyColor"
-        android:fillViewport="true"
+        android:fillViewport="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:background="@drawable/recyclerview_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/recyclerview_background"
             android:gravity="top"
             android:orientation="vertical">
 
@@ -33,13 +33,13 @@
                     android:layout_height="match_parent">
 
                     <TextView
-                        android:textColor="@color/cardview_dark_background"
                         android:id="@+id/textView42"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:labelFor="@+id/editTextLatLng"
                         android:text="@string/latitude_longitude"
+                        android:textColor="@color/cardview_dark_background"
                         android:textSize="20sp"
                         android:transitionName="transition_1"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -85,8 +85,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/favorite"
-                        android:textSize="20sp"
                         android:textColor="@color/cardview_dark_background"
+                        android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -124,12 +124,12 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/nickname"
+                        android:textColor="@color/cardview_dark_background"
                         android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:textColor="@color/cardview_dark_background"/>
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/layoutNickname"
@@ -191,8 +191,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="@string/fullname"
-                        android:textSize="20sp"
                         android:textColor="@color/cardview_dark_background"
+                        android:textSize="20sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
@@ -320,11 +320,12 @@
         android:onClick="onClickCancelEdit"
         android:rotation="45"
         android:scaleType="center"
+        app:backgroundTint="@android:color/holo_red_light"
         app:elevation="4dp"
         app:fabSize="normal"
         app:layout_anchor="@id/scrollView"
         app:layout_anchorGravity="bottom|right|end"
-        app:rippleColor="@android:color/holo_red_light"
+        app:rippleColor="@android:color/holo_red_dark"
         app:srcCompat="@drawable/add_icon" />
 
     <android.support.design.widget.FloatingActionButton
@@ -337,10 +338,11 @@
         android:focusable="true"
         android:onClick="onClickSaveEdit"
         android:scaleType="center"
+        app:backgroundTint="@android:color/holo_green_light"
         app:fabSize="normal"
         app:layout_anchor="@id/floatingActionButton3"
         app:layout_anchorGravity="center_vertical|end"
-        app:rippleColor="@android:color/holo_green_light"
+        app:rippleColor="@android:color/holo_green_dark"
         app:srcCompat="@drawable/check_icon" />
 
 </android.support.design.widget.CoordinatorLayout>
