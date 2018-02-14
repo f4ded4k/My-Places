@@ -11,7 +11,7 @@ class RecyclerDataFetcher {
     static ArrayList<MyLocation> populateList(Context context) {
 
         ArrayList<MyLocation> myLocations = new ArrayList<>();
-        myLocations.add(new MyLocation("Add a place", null, 0, 0, 0, 0));
+        myLocations.add(new MyLocation("Add a place", null, 0, 0, 0));
 
         SQLiteDatabase database = SQLUtils.initiateDatabase(context);
         Cursor cursor = database.rawQuery("SELECT * FROM locations", null);
@@ -23,7 +23,6 @@ class RecyclerDataFetcher {
                         cursor.getString(3),
                         cursor.getString(2),
                         cursor.getInt(4),
-                        cursor.getInt(5),
                         cursor.getDouble(0),
                         cursor.getDouble(1)));
 

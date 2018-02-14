@@ -118,9 +118,9 @@ class OnClickMapTask extends AsyncTask<Void, Void, Integer>{
                     nickname = "My lovely place";
                 }
 
-                if(nickname.endsWith(", ")){
+                if(nickname.endsWith(" ")){
 
-                    nickname = nickname.substring(0, nickname.length() - 1);
+                    nickname = nickname.substring(0, nickname.length() - 2);
                 }
 
                 Object[] params = new Object[]{latitude, longitude, nickname, fullname.toString(), fav};

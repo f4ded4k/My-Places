@@ -2,13 +2,10 @@ package com.indrajit.myplaces;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.animation.DynamicAnimation;
@@ -21,8 +18,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.style.BackgroundColorSpan;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -90,7 +85,6 @@ public class MainActivity extends SQLActivity {
         }, RecyclerDataFetcher.populateList(this));
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
         recyclerView.setAdapter(locationAdapter);
-        recyclerView.setHasFixedSize(true);
 
         initiateGesture();
 
@@ -181,7 +175,14 @@ public class MainActivity extends SQLActivity {
 
         new AlertDialog.Builder(this)
                 .setMessage("Are you sure?")
-                .setNegativeButton("No", null)
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int j) {
+
+                        locationAdapter.notifyItemChanged(i);
+
+                    }
+                })
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int j) {
@@ -194,6 +195,13 @@ public class MainActivity extends SQLActivity {
                         locationAdapter.notifyItemRemoved(i);
 
                         dialog.dismiss();
+                    }
+                })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+
+                        locationAdapter.notifyItemChanged(i);
                     }
                 })
                 .show();
@@ -328,59 +336,21 @@ public class MainActivity extends SQLActivity {
 
     private void initiateGesture(){
 
-        /*ItemTouchHelper.SimpleCallback simpleCallback =
-                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
-                Log.i("QWERTY", Integer.toString(direction));
-            }
-
-            @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-
-                ColorDrawable background = new ColorDrawable();
-                background.setColor(Color.RED);
-                background.setBounds(
-                        viewHolder.itemView.getRight() + (int) dX,
-                        viewHolder.itemView.getTop(),
-                        viewHolder.itemView.getRight(),
-                        viewHolder.itemView.getBottom()
-                );
-                background.draw(c);
-
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            }
-
-            @Override
-            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-
-                if(viewHolder.getItemViewType() == 1) {
-                    return super.getMovementFlags(recyclerView, viewHolder);
-
-                } else{
-                    return 0;
-                }
-            }
-        };
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);*/
-
-        ItemTouchHelper.SimpleCallback myCallback = new RecyclerViewMotionHelper(0, ItemTouchHelper.LEFT, new RecyclerViewMotionHelper.RecyclerViewMotionListener() {
+        ItemTouchHelper.SimpleCallback myCallback = new RecyclerViewMotionHelper(0, ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT, new RecyclerViewMotionHelper.RecyclerViewMotionListener() {
             @Override
             public void onSwipe(RecyclerView.ViewHolder holder, int direction) {
-                //
+
+                if(direction == ItemTouchHelper.LEFT) {
+                    deleteLocationConfirmation(holder.getAdapterPosition());
+                }
+                else{
+                    getEditor(holder.getAdapterPosition());
+                }
             }
         });
 
-        new ItemTouchHelper(myCallback).attachToRecyclerView(recyclerView);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(myCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 }
 

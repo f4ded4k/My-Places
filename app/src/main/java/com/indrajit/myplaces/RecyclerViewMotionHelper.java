@@ -20,6 +20,8 @@ class RecyclerViewMotionHelper extends ItemTouchHelper.SimpleCallback{
         this.listener = listener;
     }
 
+
+
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
         return false;
@@ -48,17 +50,22 @@ class RecyclerViewMotionHelper extends ItemTouchHelper.SimpleCallback{
     }
 
     @Override
+    public float getSwipeEscapeVelocity(float defaultValue) {
+        return super.getSwipeEscapeVelocity(defaultValue)/3*2;
+    }
+
+    @Override
     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
         View foreground = ((LocationAdapter.LocationViewHolder) viewHolder).foreground;
-        getDefaultUIUtil().onDraw(c, recyclerView, foreground, dX, dY, actionState, isCurrentlyActive);
+        getDefaultUIUtil().onDraw(c, recyclerView, foreground, dX / 2, dY, actionState, isCurrentlyActive);
     }
 
     @Override
     public void onChildDrawOver(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 
         View foreground = ((LocationAdapter.LocationViewHolder) viewHolder).foreground;
-        getDefaultUIUtil().onDrawOver(c, recyclerView, foreground, dX, dY, actionState, isCurrentlyActive);
+        getDefaultUIUtil().onDrawOver(c, recyclerView, foreground, dX / 2, dY, actionState, isCurrentlyActive);
     }
 
     @Override

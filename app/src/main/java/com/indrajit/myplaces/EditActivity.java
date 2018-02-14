@@ -115,7 +115,7 @@ public class EditActivity extends SQLActivity {
         Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
         intent.putExtra("latlng_position", position);
         startActivity(intent);
-        finish();
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
     }
 
     public void onClickNicknameReset(View v){

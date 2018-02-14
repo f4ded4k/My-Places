@@ -15,10 +15,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHolder>{
 
@@ -83,6 +85,11 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
 
             startAnimation(position, ((AddViewHolder) holder).itemView);
         }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(GenericViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
     }
 
     @Override
