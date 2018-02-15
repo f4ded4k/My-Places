@@ -14,23 +14,27 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class MainActivity extends SQLActivity {
+public class MainActivity extends SQLActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private FloatingActionButton extendButton, mapButton, deleteButton;
     private RecyclerView recyclerView;
     private Snackbar snackbar;
     private boolean expand;
     private LocationAdapter locationAdapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,10 @@ public class MainActivity extends SQLActivity {
         setContentView(R.layout.activity_main);
 
         setSupportActionBar((Toolbar) findViewById(R.id.appBar));
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefresh);
+
+        swipeRefreshLayout.setOnRefreshListener(this);
 
         recyclerView = findViewById(R.id.recyclerView);
         locationAdapter = new LocationAdapter(this, new LocationAdapter.onRespondListener() {
@@ -83,7 +91,8 @@ public class MainActivity extends SQLActivity {
                 }
             }
         }, RecyclerDataFetcher.populateList(this));
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 1);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(locationAdapter);
 
         initiateGesture();
@@ -323,8 +332,10 @@ public class MainActivity extends SQLActivity {
     private void startShareIntent(int i){
 
         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+
         sharingIntent.setType("text/plain");
-        String uri = "http://maps.google.com/maps?saddr=" +
+        String uri = "https://www.google.com/maps/search/?api=1" +
+                "&query=" +
                 String.valueOf(LocationAdapter.myLocations.get(i).getLat()) +
                 "," +
                 String.valueOf(LocationAdapter.myLocations.get(i).getLon());
@@ -351,6 +362,40 @@ public class MainActivity extends SQLActivity {
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(myCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.refreshItem){
+
+            swipeRefreshLayout.setRefreshing(true);
+
+            recreateRecyclerView();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRefresh() {
+
+
+        recreateRecyclerView();
+    }
+
+    private void recreateRecyclerView() {
+
+        LocationAdapter.myLocations = RecyclerDataFetcher.populateList(this);
+
+        locationAdapter.notifyDataSetChanged();
+        swipeRefreshLayout.setRefreshing(false);
     }
 }
 

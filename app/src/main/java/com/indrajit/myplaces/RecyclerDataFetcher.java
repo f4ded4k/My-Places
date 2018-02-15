@@ -14,7 +14,7 @@ class RecyclerDataFetcher {
         myLocations.add(new MyLocation("Add a place", null, 0, 0, 0));
 
         SQLiteDatabase database = SQLUtils.initiateDatabase(context);
-        Cursor cursor = database.rawQuery("SELECT * FROM locations", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM locations ORDER BY fav DESC", null);
 
         if (cursor.moveToFirst()) {
 

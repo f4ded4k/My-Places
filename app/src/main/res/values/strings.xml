@@ -28,4 +28,5 @@
     <string name="fullname_1">Fullname</string>
     <string name="add_a_place_icon">add a place icon</string>
     <string name="add_a_new_place_text">Add a new place</string>
+    <string name="refresh">Refresh</string>
 </resources>

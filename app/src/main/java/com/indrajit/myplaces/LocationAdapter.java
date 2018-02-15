@@ -129,7 +129,7 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
     class LocationViewHolder extends GenericViewHolder{
 
         private TextView fullname,nickname;
-        private Switch fav;
+        Switch fav;
         private View more_menu_view;
         View foreground;
 
@@ -141,6 +141,7 @@ class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHo
             fav = itemView.findViewById(R.id.switchFav);
             more_menu_view = itemView.findViewById(R.id.more_options);
             foreground = itemView.findViewById(R.id.locationCardView);
+
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
