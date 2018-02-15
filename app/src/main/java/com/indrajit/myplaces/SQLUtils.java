@@ -24,11 +24,6 @@ class SQLUtils {
         database.execSQL("DELETE FROM locations");
     }
 
-    static void deleteTable(SQLiteDatabase database) {
-
-        database.execSQL("DROP TABLE locations");
-    }
-
     static void changeFav(SQLiteDatabase database, LatLng latLng, boolean checked) {
 
         int fav;

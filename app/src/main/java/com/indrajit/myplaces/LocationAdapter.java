@@ -1,13 +1,11 @@
 package com.indrajit.myplaces;
 
 import android.content.Context;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -15,12 +13,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.GenericViewHolder>{
 
