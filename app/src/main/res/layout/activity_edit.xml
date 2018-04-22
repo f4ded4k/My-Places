@@ -54,7 +54,7 @@
                         android:ems="10"
                         android:enabled="false"
                         android:inputType="none"
-                        android:maxLines="1"
+                        android:maxLines="2"
                         android:textColor="@color/cardview_dark_background"
                         android:textStyle="italic"
                         android:transitionName="latlng_trans"
